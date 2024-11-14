@@ -76,14 +76,14 @@ void initArguments(int argc, char **argv){
   
   for(int i=0; i<argc; i++){
         //Case 1: Key is given in the command line
-        if((strcmp(argv[i][0], '-') == 0) &&(strcmp(argv[i][1], 'e') == 0) && (strcmp(argv[i][2], '/0') == 0)){
+        if((strcmp(argv[i][0], "-") == 0) &&(strcmp(argv[i][1], "e") == 0) && (strcmp(argv[i][2], "/0") == 0)){
         key = argv[i] + 2;//key = argv[i][2];
         keyLen = keyLength();
         sign = -1;
         defKey = 0; //Key is given
         }
 
-        else if((strcmp(argv[i][0], '+') == 0) &&(strcmp(argv[i][1], 'e') == 0)&& (strcmp(argv[i][2], '/0') == 0)){ //
+        else if((strcmp(argv[i][0], "+") == 0) &&(strcmp(argv[i][1], "e") == 0)&& (strcmp(argv[i][2], "/0") == 0)){ //
         key = argv[i] + 2;//key = argv[i][2];
         keyLen = keyLength();
         sign = 1;
@@ -91,16 +91,16 @@ void initArguments(int argc, char **argv){
         }
 
         // Case 2: Debug is given in the command line (I dont need to Check +D because it is not necessary cause it is the *default* value)
-        else if((strcmp(argv[i][0], '-') == 0)&&(strcmp(argv[i][1], 'D') == 0)){
+        else if((strcmp(argv[i][0], "-") == 0)&&(strcmp(argv[i][1], "D") == 0)){
         debug = 0;
         }
 
-        else if((strcmp(argv[i][0], '+') == 0)&&(strcmp(argv[i][1], 'D') == 0)){
+        else if((strcmp(argv[i][0], "+") == 0)&&(strcmp(argv[i][1], "D") == 0)){
         debug = 1;
         }
 
         //Case 3: Input File is given in the command line
-        else if((strcmp(argv[i][0], '-') == 0) && (strcmp(argv[i][1], 'i') == 0)){
+        else if((strcmp(argv[i][0], "-") == 0) && (strcmp(argv[i][1], "i") == 0)){
         input = fopen(argv[i] + 2, "r");
             if(input == NULL){
                 fprintf(stderr, "Error: Can not open file to read properly\n");
@@ -108,7 +108,7 @@ void initArguments(int argc, char **argv){
             }
         }
         //Case 4: Output File is given in the command line
-        else if((strcmp(argv[i], '-') == 0) && (strcmp(argv[i], '-o') == 0)){
+        else if((strcmp(argv[i], "-") == 0) && (strcmp(argv[i], "o") == 0)){
         output = fopen(argv[i] + 2, "w");
             if(output == NULL){
                 fprintf(stderr, "Error: Can not open file to write on properly\n");
