@@ -9,7 +9,7 @@
 
 
 //Global Variables
-_Bool debug = 1, sign = 1; //Initialize debug to True And sign to + 
+_Bool debug = 1, sign = 1,defKey = 1; //Initialize debug to True And sign to + 
   char noKey = '0', keyLen = 0; //Initialize noKey to 0 and keyLen to 0
   char* key = NULL;
   FILE * input = NULL;
@@ -17,34 +17,61 @@ _Bool debug = 1, sign = 1; //Initialize debug to True And sign to +
   
 //Function Prototypes
 char keyLength();
-char Calculate(char c, int add);
+char encode(char c, int add);
 void initArguments(int argc, char **argv);
 
 
 int main(int argc, char **argv) {
-  int i,c;
+  char index = 0,c;
   //initialize the arguments
   initArguments(argc, argv);
-
-
-
-  for(i=0; i<argc; i++){
-    
-    if(strcmp(argv[i], "-k") == 0){
-      key = argv[i+1];
-    }
-
-    if(strcmp(argv[i], "-d") == 0){
-      debug = 0;
-    }
-  }
   
+
+    //Read the input file and encode it
+    while((c = fgetc(input)) != '\n'){
+
+        //Case 1: End of file
+        if(feof(input)){
+            {
+                if(output == stdout && input != stdin){
+                    fprintf(output,"\n");
+                }
+                fclose(input);
+                fclose(output);
+                return 0;
+            }
+        }
+        
+        //Case 2: Not end of file
+        else {
+            
+            //Debugging
+            if (debug)
+                {
+                    fprintf(stderr, "Handeling charachter %c\n", c);
+                }
+
+            //Case 1: Key is not given
+            if(defKey == 1){
+
+                fputc(encode(c, (*key - '0')), output);
+            }
+            
+            //Case 2: Key is given
+            else{
+            int KTA = *((key + (index%keyLen))) - '0'; //Key To Add
+            fputc(encode(c, sign * KTA), output);
+            index++;
+            }
+        }
+    }
   
 
   return 0;
 }
 
 
+//Function to initialize the arguments
 void initArguments(int argc, char **argv){
   
   for(int i=0; i<argc; i++){
@@ -53,12 +80,14 @@ void initArguments(int argc, char **argv){
         key = argv[i] + 2;//key = argv[i][2];
         keyLen = keyLength();
         sign = -1;
+        defKey = 0; //Key is given
         }
 
         else if((strcmp(argv[i][0], "+") == 0) &&(strcmp(argv[i][1], "e") == 0)&& (strcmp(argv[i][2], "/0") == 0)){ //
         key = argv[i] + 2;//key = argv[i][2];
         keyLen = keyLength();
         sign = 1;
+        defKey = 0;//Key is given
         }
 
         // Case 2: Debug is given in the command line (I dont need to Check +D because it is not necessary cause it is the *default* value)
@@ -93,6 +122,7 @@ void initArguments(int argc, char **argv){
     if (key == NULL || keyLen == 0)
     {
         key= &noKey;
+        defKey = 1;
     }
 
     if (input == NULL)
@@ -108,7 +138,6 @@ void initArguments(int argc, char **argv){
    
 }
 
-
 //Function to calculate the length of the key
 char keyLength(){
     int i = 0;
@@ -120,33 +149,33 @@ char keyLength(){
 }
 
 //Function to calculate the new charachter according to the given key
-char Calculate(char c, int add){
+char encode(char c, int add){
 
     //Case 1: char is Lower case charachter
     if(c >= 'a' && c <= 'z'){
         c += add;
         if(c < 'a')
-            c += AlphaBetNum;
+            c += ALPHBETNUM;
         else if(c > 'z')
-            c -= AlphaBetNum;
+            c -= ALPHBETNUM;
     }
 
     //Case 2: char is Upper case charachter
     else if(c >= 'A' && c <= 'Z'){
         c += add;
         if(c < 'A')
-            c += AlphaBetNum;
+            c += ALPHBETNUM;
         else if(c > 'Z')
-            c -= AlphaBetNum;
+            c -= ALPHBETNUM;
     }
 
     //Case 3: char is Number
     else{
         c += add;
         if(c < '0')
-            c += Numbers;
+            c += NUMBERS;
         else if(c >'9')
-            c -= Numbers;
+            c -= NUMBERS;
     }
 
     return c;
