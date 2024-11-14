@@ -23,49 +23,51 @@ void initArguments(int argc, char **argv);
 
 int main(int argc, char **argv) {
   char index = 0,c;
+  char line[1024];
   //initialize the arguments
   initArguments(argc, argv);
   
 
     //Read the input file and encode it
-    while((c = fgetc(input)) != '\n'){
+    while (fgets(line, sizeof(line), input) != NULL) {
+            // Loop through each character in the line
+            for (int i = 0; line[i] != '\0'; i++) {
+                c = line[i];
 
-        //Case 1: End of file
-        if(feof(input)){
-            {
-                if(output == stdout && input != stdin){
-                    fprintf(output,"\n");
+                // If EOF is reached, stop processing and exit
+                if (feof(input)) {
+                    if (debug) {
+                        fprintf(stderr, "End of file reached. Exiting.\n");
+                    }
+                    fclose(input);
+                    fclose(output);
+                    return 0;
                 }
-                fclose(input);
-                fclose(output);
-                return 0;
+            
+            //Case 2: Not end of file
+            else {
+                
+                //Debugging
+                if (debug)
+                    {
+                        fprintf(stderr, "Handeling charachter %c \n", c);
+                    }
+
+                //Case 1: Key is not given
+                if(defKey == 1){
+
+                    fputc(encode(c, (*key - '0')), output);
+                }
+                
+                //Case 2: Key is given
+                else{
+                int KTA = *((key + (index%keyLen))) - '0'; //Key To Add
+                fputc(encode(c, sign * KTA), output);
+                index++;
+                }
+                }
             }
         }
-        
-        //Case 2: Not end of file
-        else {
-            
-            //Debugging
-            if (debug)
-                {
-                    fprintf(stderr, "Handeling charachter %c\n", c);
-                }
-
-            //Case 1: Key is not given
-            if(defKey == 1){
-
-                fputc(encode(c, (*key - '0')), output);
-            }
-            
-            //Case 2: Key is given
-            else{
-            int KTA = *((key + (index%keyLen))) - '0'; //Key To Add
-            fputc(encode(c, sign * KTA), output);
-            index++;
-            }
-        }
-    }
-  
 
   return 0;
 }
@@ -76,39 +78,40 @@ void initArguments(int argc, char **argv){
   
   for(int i=0; i<argc; i++){
         //Case 1: Key is given in the command line
-        if((strcmp(argv[i][0], "-") == 0) &&(strcmp(argv[i][1], "e") == 0) && (strcmp(argv[i][2], "/0") == 0)){
+        if((argv[i][0] == '-') &&(argv[i][1] == 'E')){
         key = argv[i] + 2;//key = argv[i][2];
         keyLen = keyLength();
         sign = -1;
         defKey = 0; //Key is given
         }
 
-        else if((strcmp(argv[i][0], "+") == 0) &&(strcmp(argv[i][1], "e") == 0)&& (strcmp(argv[i][2], "/0") == 0)){ //
-        key = argv[i] + 2;//key = argv[i][2];
+        else if((argv[i][0] == '+') &&(argv[i][1] == 'E')){ //
+        key = argv[i]+2;//key = argv[i][2];
         keyLen = keyLength();
         sign = 1;
         defKey = 0;//Key is given
         }
 
         // Case 2: Debug is given in the command line (I dont need to Check +D because it is not necessary cause it is the *default* value)
-        else if((strcmp(argv[i][0], "-") == 0)&&(strcmp(argv[i][1], "D") == 0)){
+        else if((argv[i][0] == '-')&&(argv[i][1] == 'D')){
         debug = 0;
         }
 
-        else if((strcmp(argv[i][0], "+") == 0)&&(strcmp(argv[i][1], "D") == 0)){
+        else if((argv[i][0] == '+')&&(argv[i][1] == 'D')){
         debug = 1;
         }
 
         //Case 3: Input File is given in the command line
-        else if((strcmp(argv[i][0], "-") == 0) && (strcmp(argv[i][1], "i") == 0)){
+        else if((argv[i][0] == '-') && (argv[i][1] == 'i')){
         input = fopen(argv[i] + 2, "r");
             if(input == NULL){
                 fprintf(stderr, "Error: Can not open file to read properly\n");
                 exit(1);
             }
         }
+
         //Case 4: Output File is given in the command line
-        else if((strcmp(argv[i], "-") == 0) && (strcmp(argv[i], "o") == 0)){
+        else if((argv[i][0] == '-') && (argv[i][1] == 'o')){
         output = fopen(argv[i] + 2, "w");
             if(output == NULL){
                 fprintf(stderr, "Error: Can not open file to write on properly\n");
@@ -144,7 +147,6 @@ char keyLength(){
     while(key[i] != '\0'){
         i++;
     }
-    key -= i;//Return the pointer to the start of the key
     return i;
 }
 

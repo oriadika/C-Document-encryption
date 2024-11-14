@@ -1,6 +1,6 @@
 .PHONY: all
 
-all : clean encoder run
+all : clean encoder 
 
 run: encoder
 	./encoder
