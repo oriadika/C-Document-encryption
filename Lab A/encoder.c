@@ -15,7 +15,8 @@ _Bool debug = 1, sign = 1; //Initialize debug to True And sign to +
   FILE * input = NULL;
   FILE * output= NULL;
   
-
+//Function Prototypes
+char keyLength();
 char Calculate(char c, int add);
 void initArguments(int argc, char **argv);
 
@@ -47,51 +48,78 @@ int main(int argc, char **argv) {
 void initArguments(int argc, char **argv){
   
   for(int i=0; i<argc; i++){
-    
+        //Case 1: Key is given in the command line
+        if((strcmp(argv[i][0], "-") == 0) &&(strcmp(argv[i][1], "e") == 0) && (strcmp(argv[i][2], "/0") == 0)){
+        key = argv[i] + 2;//key = argv[i][2];
+        keyLen = keyLength();
+        sign = -1;
+        }
 
-    //Case 1: Key is given in the command line
-    if((strcmp(argv[i][0], "-") == 0) &&(strcmp(argv[i][1], "e") == 0) && (strcmp(argv[i][2], "/0") == 0)){
-      key = argv[i] + 2;//key = argv[i][2];
-      sign = -1;
+        else if((strcmp(argv[i][0], "+") == 0) &&(strcmp(argv[i][1], "e") == 0)&& (strcmp(argv[i][2], "/0") == 0)){ //
+        key = argv[i] + 2;//key = argv[i][2];
+        keyLen = keyLength();
+        sign = 1;
+        }
+
+        // Case 2: Debug is given in the command line (I dont need to Check +D because it is not necessary cause it is the *default* value)
+        else if(strcmp(argv[i], "-D") == 0){
+        debug = 0;
+        }
+
+        else if(strcmp(argv[i], "+D") == 0){
+        debug = 1;
+        }
+
+        //Case 3: Input File is given in the command line
+        else if((strcmp(argv[i][0], "-") == 0) && (strcmp(argv[i][1], "i") == 0)){
+        input = fopen(argv[i] + 2, "r");
+            if(input == NULL){
+                fprintf(stderr, "Error: Can not open file to read properly\n");
+                exit(1);
+            }
+        }
+        //Case 4: Output File is given in the command line
+        else if((strcmp(argv[i], "-") == 0) && (strcmp(argv[i], "-o") == 0)){
+        output = fopen(argv[i] + 2, "w");
+            if(output == NULL){
+                fprintf(stderr, "Error: Can not open file to write on properly\n");
+                exit(1);
+            }
+        }
+              
     }
 
-    else if((strcmp(argv[i][0], "+") == 0) &&(strcmp(argv[i][1], "e") == 0)&& (strcmp(argv[i][2], "/0") == 0)){ //
-      key = argv[i] + 2;//key = argv[i][2];
-      sign = 1;
+    //Checking after the loop
+    if (key == NULL || keyLen == 0)
+    {
+        key= &noKey;
     }
 
-    // Case 2: Debug is given in the command line (I dont need to Check +D because it is not necessary cause it is the *default* value)
-    else if(strcmp(argv[i], "-D") == 0){
-      debug = 0;
+    if (input == NULL)
+    {
+        input = stdin;
     }
-
-    else if(strcmp(argv[i], "+D") == 0){
-      debug = 1;
-    }
-
-    //Case 3: Input File is given in the command line
-    else if(strcmp(argv[i], "-i") == 0){
-      input = fopen(argv[i+1], "r");
-    }
-
-    //Case 4: Output File is given in the command line
-    else if(strcmp(argv[i], "-o") == 0){
-      output = fopen(argv[i+1], "w");
-    }
-
-
-
-  }
-
-  if (key == NULL)
-  {
-    key= &noKey;
-  }
   
+    if (output == NULL)
+    {
+        output = stdout;
+    }
+    
+   
 }
 
 
+//Function to calculate the length of the key
+char keyLength(){
+    int i = 0;
+    while(key[i] != '\0'){
+        i++;
+    }
+    key -= i;//Return the pointer to the start of the key
+    return i;
+}
 
+//Function to calculate the new charachter according to the given key
 char Calculate(char c, int add){
 
     //Case 1: char is Lower case charachter
