@@ -34,42 +34,42 @@ int main(int argc, char **argv) {
             for (int i = 0; line[i] != '\0'; i++) {
                 c = line[i];
 
-                // If EOF is reached, stop processing and exit
-                if (feof(input)) {
-                    if (debug) {
-                        fprintf(stderr, "End of file reached. Exiting.\n");
-                    }
-                    fclose(input);
-                    fclose(output);
-                    return 0;
-                }
-            
-            //Case 2: Not end of file
-            else {
-                
-                //Debugging
-                if (debug)
-                    {
-                        fprintf(stderr, "Handeling charachter %c \n", c);
-                    }
+            // Not end of file 
+                    //Debugging
+                    if (debug)
+                        {
+                            fprintf(stderr, "Handeling charachter %c \n", c);
+                        }
 
-                //Case 1: Key is not given
-                if(defKey == 1){
+                    //Case 1: Key is not given
+                    if(defKey == 1){
 
-                    fputc(encode(c, (*key - '0')), output);
-                }
-                
-                //Case 2: Key is given
-                else{
-                int KTA = *((key + (index%keyLen))) - '0'; //Key To Add
-                fputc(encode(c, sign * KTA), output);
-                index++;
-                }
-                }
+                        fputc(encode(c, (*key - '0')), output);
+                    }
+                    
+                    //Case 2: Key is given
+                    else{
+                    int KTA = *((key + (index%keyLen))) - '0'; //Key To Add
+                    fputc(encode(c, sign * KTA), output);
+                    index++;
+                    }
             }
+    }
+
+        // If EOF is reached, stop processing and exit
+    if (feof(input)) {
+        if (debug) {
+            fprintf(stderr, "End of file reached. Exiting.\n");
         }
 
-  return 0;
+        else{
+            putchar('\n');
+        }
+        fclose(input);
+        fclose(output); //Printing the Encrypted code(could write fflush)
+        return 0;
+    }
+
 }
 
 
@@ -172,13 +172,14 @@ char encode(char c, int add){
     }
 
     //Case 3: char is Number
-    else{
+    else if(c >= '0' && c <= '9'){
         c += add;
         if(c < '0')
             c += NUMBERS;
         else if(c >'9')
             c -= NUMBERS;
     }
+
 
     return c;
 }
