@@ -9,7 +9,8 @@
 
 
 //Global Variables
-_Bool debug = 1, sign = 1,defKey = 1; //Initialize debug to True And sign to + 
+_Bool debug = 1, defKey = 1; //Initialize debug to True And sign to + 
+    int sign = 1;
   char noKey = '0', keyLen = 0; //Initialize noKey to 0 and keyLen to 0
   char* key = NULL;
   FILE * input = NULL;
@@ -43,7 +44,6 @@ int main(int argc, char **argv) {
 
                     //Case 1: Key is not given
                     if(defKey == 1){
-
                         fputc(encode(c, (*key - '0')), output);
                     }
                     
@@ -81,7 +81,7 @@ void initArguments(int argc, char **argv){
         if((argv[i][0] == '-') &&(argv[i][1] == 'E')){
         key = argv[i] + 2;//key = argv[i][2];
         keyLen = keyLength();
-        sign = -1;
+        sign = sign * (-1);
         defKey = 0; //Key is given
         }
 
